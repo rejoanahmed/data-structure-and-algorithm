@@ -117,7 +117,6 @@ var mainEngine = (function (matrix) {
                 break;
             }
         }
-        console.log("".concat(key, ": point:").concat(point, ", startingPoint:").concat(startingPoint, ", zeroCount:").concat(zeroCount, " deleteColumns:").concat(deleteColumns));
         if (zeroCount > point) {
             deleteColumn(startingPoint);
         }
@@ -145,7 +144,7 @@ var mainEngine = (function (matrix) {
         return result;
     })(result);
     var data = "".concat(result.length).concat(Data);
-    fs.writeFile("./c_coarse.out.txt", data, function (err) {
+    fs.writeFile("./e_elaborate.out.txt", data, function (err) {
         if (err) {
             console.log(err);
         }
