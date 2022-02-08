@@ -38,46 +38,104 @@ const ingredients = ((object) => {
 })(likeAndDislike);
 
 const IngredientRefTomatrix = ((ingredient, data) => {
-  const matrix: { [key: string]: string } = {};
+  const matrix: { [key: string]: number[] } = {};
   for (let i = 0; i < ingredient.length; i++) {
     for (let j = 0; j < data.length; j++) {
       let point;
 
       if (data[j].likes.includes(ingredient[i])) {
-        point = "2";
+        point = 2;
       } else if (data[j].dislikes.includes(ingredient[i])) {
-        point = "0";
+        point = 0;
       } else {
-        point = "1";
+        point = 1;
       }
 
       if (!matrix[ingredient[i]]) {
-        matrix[ingredient[i]] = "";
+        matrix[ingredient[i]] = [];
       }
-      matrix[ingredient[i]] += point;
+      matrix[ingredient[i]].push(point);
     }
   }
 
   return matrix;
 })(ingredients, likeAndDislike);
 
-console.log(IngredientRefTomatrix);
-// const filterMatrix = (matrix: { [s: string]: number[] }) => {
-//   for (const [key, value] of Object.entries(matrix)) {
-//     let bro: boolean = true;
-//     for (let i = 0; i < value.length; i++) {
-//       if (value[i] === 1) {
-//         bro = true;
-//       } else {
-//         bro = false;
-//         break;
-//       }
-//     }
-//     if (bro) {
-//       delete matrix[key];
-//     }
-//   }
-// };
+// console.log(IngredientRefTomatrix);
+const mainEngine = ((matrix: { [s: string]: number[] }) => {
+  const result: string[] = [];
+  for (const [key, value] of Object.entries(matrix)) {
+    let likeCount = 0;
+    let dislikeCount = 0;
+    let dislikeCounts: number[] = [];
+    for (let i = 0; i < value.length; i++) {
+      switch (value[i]) {
+        case 0:
+          dislikeCount++;
+          break;
+        case 2:
+          likeCount++;
+          break;
+      }
+    }
+    dislikeCounts.push(dislikeCount);
+    if (likeCount === 0 && dislikeCount === 0) {
+      delete matrix[key];
+    } else if (likeCount === 0) {
+      delete matrix[key];
+    } else if (dislikeCount === 0) {
+      delete matrix[key];
+      result.push(key);
+    }
+  }
+
+  const deleteColumn = (column: number) => {
+    for (const [key, value] of Object.entries(matrix)) {
+      value.splice(column, 1);
+    }
+  };
+
+  const numberOfZeroInColumn = (column: number) => {
+    let count = 0;
+    for (const [key, value] of Object.entries(matrix)) {
+      if (value[column] === 0) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  for (const [key, value] of Object.entries(matrix)) {
+    let point = 1;
+    let deleteColumns: number[] = [];
+    let deletezeroColumn: number = 0;
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] === 0) {
+        deletezeroColumn = i;
+        for (let j = 0; j < value.length; j++) {
+          if (j !== i) {
+            if (value[j] === 0) {
+              point++;
+            } else if (value[j] === 2) {
+              point += numberOfZeroInColumn(j);
+              deleteColumns.push(j);
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    if (point > deleteColumns.length) {
+      for (let i = 0; i < deleteColumns.length; i++) {
+        deleteColumn(deleteColumns[i]);
+      }
+      delete matrix[key];
+    } else {
+      deleteColumn(deletezeroColumn);
+    }
+  }
+})(IngredientRefTomatrix);
 
 // reduced row echelon matrix
 
