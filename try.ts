@@ -65,10 +65,18 @@ const IngredientRefTomatrix = ((ingredient, data) => {
 
 // console.log(IngredientRefTomatrix);
 const mainEngine = ((matrix: { [s: string]: number[] }) => {
+<<<<<<< HEAD
   let result: string[] = [];
   for (const [key, value] of Object.entries(matrix)) {
     let likeCount = 0;
     let dislikeCount = 0;
+=======
+  const result: string[] = [];
+  for (const [key, value] of Object.entries(matrix)) {
+    let likeCount = 0;
+    let dislikeCount = 0;
+    let dislikeCounts: number[] = [];
+>>>>>>> f5bbf23870894066a2177f29945e759a850ee63c
     for (let i = 0; i < value.length; i++) {
       switch (value[i]) {
         case 0:
@@ -77,6 +85,7 @@ const mainEngine = ((matrix: { [s: string]: number[] }) => {
         case 2:
           likeCount++;
           break;
+<<<<<<< HEAD
       }
     }
 
@@ -160,6 +169,67 @@ const mainEngine = ((matrix: { [s: string]: number[] }) => {
       console.log(err);
     }
   });
+=======
+      }
+    }
+    dislikeCounts.push(dislikeCount);
+    if (likeCount === 0 && dislikeCount === 0) {
+      delete matrix[key];
+    } else if (likeCount === 0) {
+      delete matrix[key];
+    } else if (dislikeCount === 0) {
+      delete matrix[key];
+      result.push(key);
+    }
+  }
+
+  const deleteColumn = (column: number) => {
+    for (const [key, value] of Object.entries(matrix)) {
+      value.splice(column, 1);
+    }
+  };
+
+  const numberOfZeroInColumn = (column: number) => {
+    let count = 0;
+    for (const [key, value] of Object.entries(matrix)) {
+      if (value[column] === 0) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  for (const [key, value] of Object.entries(matrix)) {
+    let point = 1;
+    let deleteColumns: number[] = [];
+    let deletezeroColumn: number = 0;
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] === 0) {
+        deletezeroColumn = i;
+        for (let j = 0; j < value.length; j++) {
+          if (j !== i) {
+            if (value[j] === 0) {
+              point++;
+            } else if (value[j] === 2) {
+              point += numberOfZeroInColumn(j);
+              deleteColumns.push(j);
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    if (point > deleteColumns.length) {
+      for (let i = 0; i < deleteColumns.length; i++) {
+        deleteColumn(deleteColumns[i]);
+      }
+      delete matrix[key];
+    } else {
+      deleteColumn(deletezeroColumn);
+    }
+  }
+>>>>>>> f5bbf23870894066a2177f29945e759a850ee63c
 })(IngredientRefTomatrix);
 
 // reduced row echelon matrix
