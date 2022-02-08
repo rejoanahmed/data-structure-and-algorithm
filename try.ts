@@ -1,6 +1,7 @@
 const nReadlines = require("n-readlines");
 const broadbandLines = new nReadlines("./input.txt");
 let filterCount = 0;
+let totalSatisfied = 0;
 const likeAndDislike = (() => {
   let line = broadbandLines.next();
 
@@ -17,7 +18,7 @@ const likeAndDislike = (() => {
 
   return result;
 })();
-const numberofPeople = likeAndDislike.length;
+let numberofPeople = likeAndDislike.length;
 
 const playgroundIngredients = ((object) => {
   const Ingredients = new Map<string, { likes: number; dislikes: number }>();
@@ -54,7 +55,7 @@ const playgroundIngredients = ((object) => {
   return Ingredients;
 })(likeAndDislike);
 
-console.log(`in the playground: ${playgroundIngredients.size} ingredients`);
+console.log(playgroundIngredients);
 
 const removeItemFromlikeAndDislike = (ingredient: string, take = true) => {
   for (let i = 0; i < likeAndDislike.length; i++) {
@@ -66,18 +67,21 @@ const removeItemFromlikeAndDislike = (ingredient: string, take = true) => {
         likedIngredients.splice(likedIngredients.indexOf(ingredient), 1);
       } else if (dislikedIngredients.includes(ingredient)) {
         likeAndDislike.splice(i, 1);
+        i--;
       }
     } else {
       if (dislikedIngredients.includes(ingredient)) {
         dislikedIngredients.splice(dislikedIngredients.indexOf(ingredient), 1);
       } else if (likedIngredients.includes(ingredient)) {
         likeAndDislike.splice(i, 1);
+        i--;
       }
     }
   }
 };
 
 const satisfied = () => {
+  if (filterCount !== 0) numberofPeople = likeAndDislike.length;
   const currentNumberOfPeople = likeAndDislike.length;
   filterCount++;
   let satisfied = 0;
@@ -86,11 +90,14 @@ const satisfied = () => {
       likeAndDislike[i].likes.length === 1 &&
       likeAndDislike[i].dislikes.length === 1
     ) {
+      likeAndDislike.splice(i, 1);
+      i--;
       satisfied++;
+      totalSatisfied++;
     }
   }
   console.log(
-    `satisfied: ${satisfied} after the ${filterCount} filtraion \n lost ${
+    `satisfied: ${satisfied} out of ${numberofPeople} after the ${filterCount} filtraion \n lost ${
       numberofPeople - currentNumberOfPeople
     } people`
   );
@@ -110,7 +117,7 @@ const output = () => console.log(willbeintheoutput);
 for (let [key, value] of Array.from(playgroundIngredients)) {
   if (value.likes === 0) {
     playgroundIngredients.delete(key);
-    removeItemFromlikeAndDislike(key);
+    removeItemFromlikeAndDislike(key, false);
   }
 
   if (value.dislikes === 0) {
@@ -120,17 +127,27 @@ for (let [key, value] of Array.from(playgroundIngredients)) {
   }
 }
 satisfied();
+console.log(likeAndDislike);
+console.log(playgroundIngredients);
+output();
+
+// console.log(likeAndDislike);
 
 // second filter : remove all with equal like and dislike
+
 for (let [key, value] of Array.from(playgroundIngredients)) {
   if (value.likes === value.dislikes) {
     playgroundIngredients.delete(key);
-    // will not in be output
-    removeItemFromlikeAndDislike(key, false);
+    // will be in output
+    removeItemFromlikeAndDislike(key);
   }
 }
 satisfied();
+console.log(playgroundIngredients);
+output();
+console.log(likeAndDislike);
 
+console.log(totalSatisfied);
 // const numberofPeople = likedAndDisliked.likes.length;
 
 // export const playgroundIngredient: string[] = (() => {

@@ -1,6 +1,7 @@
 var nReadlines = require("n-readlines");
 var broadbandLines = new nReadlines("./input.txt");
 var filterCount = 0;
+var totalSatisfied = 0;
 var likeAndDislike = (function () {
     var line = broadbandLines.next();
     var result = [];
@@ -48,7 +49,7 @@ var playgroundIngredients = (function (object) {
     }
     return Ingredients;
 })(likeAndDislike);
-console.log("in the playground: ".concat(playgroundIngredients.size, " ingredients"));
+console.log(playgroundIngredients);
 var removeItemFromlikeAndDislike = function (ingredient, take) {
     if (take === void 0) { take = true; }
     for (var i = 0; i < likeAndDislike.length; i++) {
@@ -60,6 +61,7 @@ var removeItemFromlikeAndDislike = function (ingredient, take) {
             }
             else if (dislikedIngredients.includes(ingredient)) {
                 likeAndDislike.splice(i, 1);
+                i--;
             }
         }
         else {
@@ -68,17 +70,39 @@ var removeItemFromlikeAndDislike = function (ingredient, take) {
             }
             else if (likedIngredients.includes(ingredient)) {
                 likeAndDislike.splice(i, 1);
+                i--;
             }
         }
     }
 };
+var satisfied = function () {
+    if (filterCount !== 0)
+        numberofPeople = likeAndDislike.length;
+    var currentNumberOfPeople = likeAndDislike.length;
+    filterCount++;
+    var satisfied = 0;
+    for (var i = 0; i < likeAndDislike.length; i++) {
+        if (likeAndDislike[i].likes.length === 1 &&
+            likeAndDislike[i].dislikes.length === 1) {
+            likeAndDislike.splice(i, 1);
+            i--;
+            satisfied++;
+            totalSatisfied++;
+        }
+    }
+    console.log("satisfied: ".concat(satisfied, " out of ").concat(numberofPeople, " after the ").concat(filterCount, " filtraion \n lost ").concat(numberofPeople - currentNumberOfPeople, " people"));
+};
 var willbeintheoutput = [];
+var nowInthePlayground = function () {
+    console.log("now in playgroumd: ".concat(playgroundIngredients.size, " ingredients left"));
+};
+var output = function () { return console.log(willbeintheoutput); };
 // first filter : remove all with no likes nad no dislikes
 for (var _i = 0, _a = Array.from(playgroundIngredients); _i < _a.length; _i++) {
     var _b = _a[_i], key = _b[0], value = _b[1];
     if (value.likes === 0) {
         playgroundIngredients["delete"](key);
-        removeItemFromlikeAndDislike(key);
+        removeItemFromlikeAndDislike(key, false);
     }
     if (value.dislikes === 0) {
         playgroundIngredients["delete"](key);
@@ -86,33 +110,25 @@ for (var _i = 0, _a = Array.from(playgroundIngredients); _i < _a.length; _i++) {
         willbeintheoutput.push(key);
     }
 }
-var satisfied = function () {
-    var currentNumberOfPeople = likeAndDislike.length;
-    filterCount++;
-    var satisfied = 0;
-    for (var i = 0; i < likeAndDislike.length; i++) {
-        if (likeAndDislike[i].likes.length === 1 &&
-            likeAndDislike[i].dislikes.length === 1) {
-            satisfied++;
-        }
-    }
-    console.log("satisfied: ".concat(satisfied, " after the ").concat(filterCount, " filtraion \n lost ").concat(numberofPeople - currentNumberOfPeople, " people"));
-};
-var nowInthePlayground = function () {
-    console.log("now in playgroumd: ".concat(playgroundIngredients.size, " ingredients left"));
-};
-var output = function () { return console.log(willbeintheoutput); };
 satisfied();
+console.log(likeAndDislike);
+console.log(playgroundIngredients);
+output();
+// console.log(likeAndDislike);
 // second filter : remove all with equal like and dislike
 for (var _c = 0, _d = Array.from(playgroundIngredients); _c < _d.length; _c++) {
     var _e = _d[_c], key = _e[0], value = _e[1];
     if (value.likes === value.dislikes) {
         playgroundIngredients["delete"](key);
-        // will not in be output
-        removeItemFromlikeAndDislike(key, false);
+        // will be in output
+        removeItemFromlikeAndDislike(key);
     }
 }
 satisfied();
+console.log(playgroundIngredients);
+output();
+console.log(likeAndDislike);
+console.log(totalSatisfied);
 // const numberofPeople = likedAndDisliked.likes.length;
 // export const playgroundIngredient: string[] = (() => {
 //   const numberofPeople = likedAndDisliked.likes.length;
