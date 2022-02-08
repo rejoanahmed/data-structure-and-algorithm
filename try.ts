@@ -38,45 +38,46 @@ const ingredients = ((object) => {
 })(likeAndDislike);
 
 const IngredientRefTomatrix = ((ingredient, data) => {
-  const matrix: { [key: string]: number[] } = {};
+  const matrix: { [key: string]: string } = {};
   for (let i = 0; i < ingredient.length; i++) {
     for (let j = 0; j < data.length; j++) {
       let point;
 
       if (data[j].likes.includes(ingredient[i])) {
-        point = 2;
+        point = "2";
       } else if (data[j].dislikes.includes(ingredient[i])) {
-        point = 0;
+        point = "0";
       } else {
-        point = 1;
+        point = "1";
       }
 
       if (!matrix[ingredient[i]]) {
-        matrix[ingredient[i]] = [];
+        matrix[ingredient[i]] = "";
       }
-      matrix[ingredient[i]].push(point);
+      matrix[ingredient[i]] += point;
     }
   }
 
   return matrix;
 })(ingredients, likeAndDislike);
 
-const filterMatrix = (matrix: { [s: string]: number[] }) => {
-  for (const [key, value] of Object.entries(matrix)) {
-    let bro: boolean = true;
-    for (let i = 0; i < value.length; i++) {
-      if (value[i] === 1) {
-        bro = true;
-      } else {
-        bro = false;
-        break;
-      }
-    }
-    if (bro) {
-      delete matrix[key];
-    }
-  }
-};
+console.log(IngredientRefTomatrix);
+// const filterMatrix = (matrix: { [s: string]: number[] }) => {
+//   for (const [key, value] of Object.entries(matrix)) {
+//     let bro: boolean = true;
+//     for (let i = 0; i < value.length; i++) {
+//       if (value[i] === 1) {
+//         bro = true;
+//       } else {
+//         bro = false;
+//         break;
+//       }
+//     }
+//     if (bro) {
+//       delete matrix[key];
+//     }
+//   }
+// };
 
 // reduced row echelon matrix
 

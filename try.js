@@ -50,6 +50,7 @@ var IngredientRefTomatrix = (function (ingredient, data) {
     }
     return matrix;
 })(ingredients, likeAndDislike);
+console.log(IngredientRefTomatrix);
 var filterMatrix = function (matrix) {
     for (var _i = 0, _a = Object.entries(matrix); _i < _a.length; _i++) {
         var _b = _a[_i], key = _b[0], value = _b[1];
