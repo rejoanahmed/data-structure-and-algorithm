@@ -1,4 +1,5 @@
 var nReadlines = require("n-readlines");
+var fs = require("fs");
 var broadbandLines = new nReadlines("./input.txt");
 var likeAndDislike = (function () {
     var line = broadbandLines.next();
@@ -50,24 +51,106 @@ var IngredientRefTomatrix = (function (ingredient, data) {
     }
     return matrix;
 })(ingredients, likeAndDislike);
-var filterMatrix = function (matrix) {
+// console.log(IngredientRefTomatrix);
+// console.log(IngredientRefTomatrix);
+var mainEngine = (function (matrix) {
+    var result = [];
     for (var _i = 0, _a = Object.entries(matrix); _i < _a.length; _i++) {
         var _b = _a[_i], key = _b[0], value = _b[1];
-        var bro = true;
+        var likeCount = 0;
+        var dislikeCount = 0;
         for (var i = 0; i < value.length; i++) {
-            if (value[i] === 1) {
-                bro = true;
-            }
-            else {
-                bro = false;
-                break;
+            switch (value[i]) {
+                case 0:
+                    dislikeCount++;
+                    break;
+                case 2:
+                    likeCount++;
+                    break;
             }
         }
-        if (bro) {
+        if (likeCount === 0) {
+            delete matrix[key];
+        }
+        else if (dislikeCount === 0) {
+            result.push(key);
             delete matrix[key];
         }
     }
-};
+    var deleteColumn = function (column) {
+        for (var _i = 0, _a = Object.entries(matrix); _i < _a.length; _i++) {
+            var _b = _a[_i], key = _b[0], value = _b[1];
+            value.splice(column, 1);
+        }
+    };
+    var numberOfZeroInColumn = function (column) {
+        var count = 0;
+        for (var _i = 0, _a = Object.entries(matrix); _i < _a.length; _i++) {
+            var _b = _a[_i], key = _b[0], value = _b[1];
+            if (value[column] === 0) {
+                count++;
+            }
+        }
+        return count;
+    };
+    for (var _c = 0, _d = Object.entries(matrix); _c < _d.length; _c++) {
+        var _e = _d[_c], key = _e[0], value = _e[1];
+        var point = 1;
+        var deleteColumns = [];
+        var startingPoint = 0;
+        var zeroCount = 0;
+        for (var i = 0; i < value.length; i++) {
+            if (value[i] === 0) {
+                startingPoint = i;
+                zeroCount = numberOfZeroInColumn(i);
+                for (var j = 0; j < value.length; j++) {
+                    if (j !== i) {
+                        if (value[j] === 0) {
+                            point++;
+                        }
+                        else if (value[j] === 2) {
+                            point += numberOfZeroInColumn(j);
+                            deleteColumns.push(j);
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        console.log("".concat(key, ": point:").concat(point, ", startingPoint:").concat(startingPoint, ", zeroCount:").concat(zeroCount, " deleteColumns:").concat(deleteColumns));
+        if (zeroCount > point) {
+            deleteColumn(startingPoint);
+        }
+        else {
+            if (point > deleteColumns.length) {
+                delete matrix[key];
+                for (var i = 0; i < deleteColumns.length; i++) {
+                    deleteColumn(deleteColumns[i]);
+                }
+            }
+            else {
+                deleteColumn(startingPoint);
+            }
+        }
+    }
+    for (var _f = 0, _g = Object.entries(matrix); _f < _g.length; _f++) {
+        var _h = _g[_f], key = _h[0], value = _h[1];
+        result.push(key);
+    }
+    var Data = (function (data) {
+        var result = "";
+        for (var i = 0; i < data.length; i++) {
+            result += " ".concat(data[i]);
+        }
+        return result;
+    })(result);
+    var data = "".concat(result.length).concat(Data);
+    fs.writeFile("./c_coarse.out.txt", data, function (err) {
+        if (err) {
+            console.log(err);
+        }
+    });
+})(IngredientRefTomatrix);
 // reduced row echelon matrix
 // console.log(Object.keys(ingredientPoints).length);
 // let numberofPeople = likeAndDislike.length;

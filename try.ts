@@ -1,4 +1,5 @@
 const nReadlines = require("n-readlines");
+const fs = require("fs");
 const broadbandLines = new nReadlines("./input.txt");
 
 const likeAndDislike = (() => {
@@ -60,23 +61,106 @@ const IngredientRefTomatrix = ((ingredient, data) => {
 
   return matrix;
 })(ingredients, likeAndDislike);
+// console.log(IngredientRefTomatrix);
 
-const filterMatrix = (matrix: { [s: string]: number[] }) => {
+// console.log(IngredientRefTomatrix);
+const mainEngine = ((matrix: { [s: string]: number[] }) => {
+  let result: string[] = [];
   for (const [key, value] of Object.entries(matrix)) {
-    let bro: boolean = true;
+    let likeCount = 0;
+    let dislikeCount = 0;
     for (let i = 0; i < value.length; i++) {
-      if (value[i] === 1) {
-        bro = true;
-      } else {
-        bro = false;
-        break;
+      switch (value[i]) {
+        case 0:
+          dislikeCount++;
+          break;
+        case 2:
+          likeCount++;
+          break;
       }
     }
-    if (bro) {
+
+    if (likeCount === 0) {
+      delete matrix[key];
+    } else if (dislikeCount === 0) {
+      result.push(key);
       delete matrix[key];
     }
   }
-};
+
+  const deleteColumn = (column: number) => {
+    for (const [key, value] of Object.entries(matrix)) {
+      value.splice(column, 1);
+    }
+  };
+
+  const numberOfZeroInColumn = (column: number) => {
+    let count = 0;
+    for (const [key, value] of Object.entries(matrix)) {
+      if (value[column] === 0) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  for (const [key, value] of Object.entries(matrix)) {
+    let point = 1;
+    let deleteColumns: number[] = [];
+    let startingPoint: number = 0;
+    let zeroCount: number = 0;
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] === 0) {
+        startingPoint = i;
+        zeroCount = numberOfZeroInColumn(i);
+        for (let j = 0; j < value.length; j++) {
+          if (j !== i) {
+            if (value[j] === 0) {
+              point++;
+            } else if (value[j] === 2) {
+              point += numberOfZeroInColumn(j);
+              deleteColumns.push(j);
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    console.log(
+      `${key}: point:${point}, startingPoint:${startingPoint}, zeroCount:${zeroCount} deleteColumns:${deleteColumns}`
+    );
+
+    if (zeroCount > point) {
+      deleteColumn(startingPoint);
+    } else {
+      if (point > deleteColumns.length) {
+        delete matrix[key];
+        for (let i = 0; i < deleteColumns.length; i++) {
+          deleteColumn(deleteColumns[i]);
+        }
+      } else {
+        deleteColumn(startingPoint);
+      }
+    }
+  }
+  for (const [key, value] of Object.entries(matrix)) {
+    result.push(key);
+  }
+  const Data = ((data: string[]) => {
+    let result: string = "";
+    for (let i = 0; i < data.length; i++) {
+      result += ` ${data[i]}`;
+    }
+    return result;
+  })(result);
+  const data = `${result.length}${Data}`;
+  fs.writeFile("./c_coarse.out.txt", data, (err: any) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+})(IngredientRefTomatrix);
 
 // reduced row echelon matrix
 
