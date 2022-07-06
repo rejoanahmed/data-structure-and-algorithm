@@ -38,4 +38,4 @@ Explanation: F(4) = F(3) + F(2) = 2 + 1 = 3.
 0 <= n <= 30
 ```
 
-[^1]: [link to the leetcode problem](https://leetcode.com/problems/fibonacci-number/)
+[link to the leetcode problem](https://leetcode.com/problems/fibonacci-number/)
