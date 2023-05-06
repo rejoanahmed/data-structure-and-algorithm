@@ -1,32 +1,26 @@
 function intToRoman(num: number): string {
-  const romanMap: { [key: number]: { 1: string; 5: string } } = {
-    1: { 1: "I", 5: "V" },
-    2: { 1: "X", 5: "L" },
-    3: { 1: "C", 5: "D" },
-    4: { 1: "M", 5: "" },
+  const rNums: Record<string, number> = {
+    M: 1000,
+    CM: 900,
+    D: 500,
+    CD: 400,
+    C: 100,
+    XC: 90,
+    L: 50,
+    XL: 40,
+    X: 10,
+    IX: 9,
+    V: 5,
+    IV: 4,
+    I: 1,
   };
-
-  let roman = "",
-    i = 1;
-  while (num > 0) {
-    let r = num % 10;
-    const romanMapItem = romanMap[i];
-    if (!romanMapItem) break;
-    if (r < 4) {
-      roman = romanMapItem[1].repeat(r) + roman;
-    } else if (r === 4) {
-      roman = romanMapItem[1] + romanMapItem[5] + roman;
-    } else if (r === 5) {
-      roman = romanMapItem[5] + roman;
-    } else if (r < 9) {
-      roman = romanMapItem[5] + romanMapItem[1].repeat(r - 5) + roman;
-    } else if (r === 9) {
-      roman = romanMapItem[1] + romanMap[i + 1][1] + roman;
+  let result = "";
+  for (let rN in rNums) {
+    let count = num / rNums[rN];
+    if (count > 0) {
+      result += rN.repeat(count);
+      num = num % rNums[rN];
     }
-    num = Math.floor(num / 10);
-    i++;
   }
-  return roman;
+  return result;
 }
-
-console.log(intToRoman(1994)); // III
