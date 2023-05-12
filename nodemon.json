@@ -1,5 +1,5 @@
 {
-  "watch": ["./src/21.ts"],
+  "watch": ["./src/22.ts"],
   "ignore": ["src/**/*.spec.ts", "node_modules/**/*.ts"],
-  "exec": "ts-node ./src/21.ts"
+  "exec": "ts-node ./src/22.ts"
 }
