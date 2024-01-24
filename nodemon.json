@@ -1,5 +1,5 @@
 {
-  "watch": ["./src/stringStream.ts"],
+  "watch": ["./src/patternMatch.ts"],
   "ignore": ["src/**/*.spec.ts", "node_modules/**/*.ts"],
-  "exec": "ts-node ./src/stringStream.ts"
+  "exec": "ts-node ./src/patternMatch.ts"
 }
